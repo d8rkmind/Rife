@@ -1,0 +1,2 @@
+class CantidateNotFoundError(Exception):
+    pass
