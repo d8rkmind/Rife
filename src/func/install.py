@@ -1,13 +1,22 @@
 
 from subprocess import call
-from shutil import which
-
+from shutil import ExecError, which
+from src.utils.summary import Summary
 from src.db.database import Database
 from src.console.print import input as _input
 from src.error import CantidateNotFoundError
 from os import devnull
-
+from rich.live import Live
+from rich.panel import Panel
+from rich.progress import (Progress, SpinnerColumn,TimeElapsedColumn,)
 DEVNULL = open(devnull, 'w')
+progress = Progress(
+    SpinnerColumn(style="bold"),
+    "{task.description} : ",
+    TimeElapsedColumn(),
+)
+panel = Panel(progress)
+progress.add_task(description="Calculating dependencies",)
 
 
 class Install:
@@ -19,8 +28,13 @@ class Install:
         self.not_found = []
         self.dependency = []
         self.search()
-        self.dependency_calculate()
-        print(self.packages)
+        with Live(panel, refresh_per_second=10):
+            self.dependency_calculate()
+            self.database.__exit__()
+        self.sum = Summary(self.packages)
+        ask,sum = self.sum.ask()
+        if not ask:
+            raise ExecError("Installation aborted")
 
     def is_installed(self, package):
         a = call(["dpkg", "-s", package], stdout=DEVNULL, stderr=DEVNULL) == 0
@@ -30,7 +44,7 @@ class Install:
     def conflit(self, data):
         message = "Conflict : {} : ".format(data[0][0])
         for index, i in enumerate(data):
-            message += f"({index+1}) V{i[2]} {i[1]}  "
+            message += f"({index+1}) {i[2]} V {i[1]}  "
         return data[int(_input(message))-1]
 
     def dependency_calculate(self):
@@ -87,4 +101,3 @@ class Install:
 
         if value not in self.packages:
             self.packages.append(value)
-        

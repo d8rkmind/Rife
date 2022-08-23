@@ -27,4 +27,5 @@ def sync():
 @click.argument('args', nargs=-1)
 @needroot
 def install(args):
-    Install(args)
+    if len(args) > 0:
+        Install(args)

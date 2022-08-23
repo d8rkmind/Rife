@@ -1,7 +1,7 @@
 import asyncio
 import os
 import sys
-from src.constants import PKG_GZ_DOWNLOAD_PATH
+from src.constants import PKG_DOWNLOAD_PATH, PKG_GZ_DOWNLOAD_PATH
 import aiohttp
 from rich.live import Live
 from rich.panel import Panel
@@ -60,3 +60,15 @@ class Downloader:
                     async for data in resp.content.iter_chunked(1024):
                         f.write(data)
                         self.download_progress.advance(job, advance=len(data))
+
+
+class DownloaderPackage:
+    def __init__(self,list:dict):
+        self.list = list
+        self.path = PKG_DOWNLOAD_PATH
+        os.makedirs(self.path, exist_ok=True)
+        
+
+    def __init__download(self):
+        for i in self.list:
+            self.__download_file(i)
