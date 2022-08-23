@@ -20,5 +20,5 @@ class Database:
     def search_by_dep(self, package,repo):
         self.cursor.execute(
             f"SELECT Package,Version,Repository,Depends,Size,SHA256,MD5sum,Filename FROM packages WHERE Package = '{package}' AND instr(Repository,'{repo}')")
-        return self.cursor.fetchall()
+        return self.cursor.fetchone()
 
