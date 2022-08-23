@@ -15,3 +15,5 @@ def print_warning(message):
 
 def print(message):
     console.print(message)
+def input(message):
+    return console.input(message)
