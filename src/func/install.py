@@ -59,16 +59,7 @@ class Install:
             data = data[0]
         else:
             data = data[0]
-        self.packages.append({
-            "Package": data[0],
-            "Version": data[1],
-            "Repository": data[2],
-            "Depends": data[3],
-            "Size": data[4],
-            "SHA256": data[5],
-            "MD5sum": data[6],
-            "url": data[7]
-        })
+        self.write_value(data)
 
     def search(self):
         for package in self.args:
@@ -80,13 +71,20 @@ class Install:
                     data = self.conflit(data)
                 else:
                     data = data[0]
-                self.packages.append({
-                    "Package": data[0],
-                    "Version": data[1],
-                    "Repository": data[2],
-                    "Depends": data[3],
-                    "Size": data[4],
-                    "SHA256": data[5],
-                    "MD5sum": data[6],
-                    "url": data[7]
-                })
+                self.write_value(data)
+
+    def write_value(self, data):
+        value = {
+            "Package": data[0],
+            "Version": data[1],
+            "Repository": data[2],
+            "Depends": data[3],
+            "Size": data[4],
+            "SHA256": data[5],
+            "MD5sum": data[6],
+            "url": data[7]
+        }
+
+        if value not in self.packages:
+            self.packages.append(value)
+        
