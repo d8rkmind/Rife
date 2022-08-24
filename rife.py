@@ -12,6 +12,7 @@ from src.parse import __main__
 
 def main():
     try:
+        
         __main__()
     except KeyboardInterrupt :
         print_error("\nInterrupted by user")
