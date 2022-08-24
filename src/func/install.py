@@ -9,6 +9,7 @@ from src.error import CantidateNotFoundError
 from src.utils.Downloader import DownloaderPackage
 from os import devnull
 from rich.live import Live
+from src.utils.installscript import install as install_script
 from rich.panel import Panel
 from rich.progress import (Progress, SpinnerColumn,TimeElapsedColumn,)
 DEVNULL = open(devnull, 'w')
@@ -44,6 +45,7 @@ class Install:
                 self.add_value+=int(i['Size'])
             DownloaderPackage(self.packages,self.add_value)
             signature(self.packages)
+            install_script()
         else:
             raise ExecError("No package found")
 
