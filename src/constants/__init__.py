@@ -1,7 +1,7 @@
 APP_NAME = "rife"
 CONFIG_PATH = f"/etc/{APP_NAME}/"
-PACKAGE_DB_PATH = f"/home/hakai/Project/Rife/test/Package.db"
 PACKAGE_PATH = f"/var/lib/{APP_NAME}/"
+PACKAGE_DB_PATH = f"{PACKAGE_PATH}Package.db"
 SOURCE_LIST = f"{APP_NAME}_sources.list"
 PKG_GZ_DOWNLOAD_PATH = f"/tmp/{APP_NAME}/package/"
 PKG_DOWNLOAD_PATH = f"/tmp/{APP_NAME}/download/"
