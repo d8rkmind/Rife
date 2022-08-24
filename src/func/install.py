@@ -4,7 +4,9 @@ from shutil import ExecError, which
 from src.utils.summary import Summary
 from src.db.database import Database
 from src.console.print import input as _input
+from src.utils.dpkg_sig import signature
 from src.error import CantidateNotFoundError
+from src.utils.Downloader import DownloaderPackage
 from os import devnull
 from rich.live import Live
 from rich.panel import Panel
@@ -28,13 +30,22 @@ class Install:
         self.not_found = []
         self.dependency = []
         self.search()
+        self.add_value = 0
         with Live(panel, refresh_per_second=10):
             self.dependency_calculate()
             self.database.__exit__()
-        self.sum = Summary(self.packages)
-        ask,sum = self.sum.ask()
-        if not ask:
-            raise ExecError("Installation aborted")
+        if len(self.packages) > 0:
+            self.sum = Summary(self.packages)
+            ask= self.sum.ask()
+            
+            if not ask:
+                raise ExecError("Installation aborted")
+            for i in self.packages:
+                self.add_value+=int(i['Size'])
+            DownloaderPackage(self.packages,self.add_value)
+            signature(self.packages)
+        else:
+            raise ExecError("No package found")
 
     def is_installed(self, package):
         a = call(["dpkg", "-s", package], stdout=DEVNULL, stderr=DEVNULL) == 0
@@ -65,7 +76,7 @@ class Install:
                 self.search_d(dependency, repo)
 
     def search_d(self, package, repo):
-        data = self.database.search(package)
+        data = self.database.search_by_dep(package,repo)
         if len(data) == 0:
             self.not_found.append(package)
             return
@@ -96,7 +107,8 @@ class Install:
             "Size": data[4],
             "SHA256": data[5],
             "MD5sum": data[6],
-            "url": data[7]
+            "url": data[7],
+            "Priority": data[8],
         }
 
         if value not in self.packages:

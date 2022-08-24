@@ -18,6 +18,7 @@ class Connection:
             Source TEXT,
             Version TEXT ,
             Repository TEXT,
+            Priority TEXT,
             Depends TEXT,
             Description TEXT,
             Size INT ,

@@ -14,11 +14,10 @@ class Database:
 
     def search(self, package):
         self.cursor.execute(
-            f"SELECT Package,Version,Repository,Depends,Size,SHA256,MD5sum,Filename FROM packages WHERE Package = '{package}'")
+            f"SELECT Package,Version,Repository,Depends,Size,SHA256,MD5sum,Filename,Priority FROM packages WHERE Package = '{package}'")
         return self.cursor.fetchall()
     
     def search_by_dep(self, package,repo):
         self.cursor.execute(
-            f"SELECT Package,Version,Repository,Depends,Size,SHA256,MD5sum,Filename FROM packages WHERE Package = '{package}' AND instr(Repository,'{repo}')")
-        return self.cursor.fetchone()
-
+            f"SELECT Package,Version,Repository,Depends,Size,SHA256,MD5sum,Filename,Priority FROM packages WHERE Package = '{package}' AND instr(Repository,'{repo}')")
+        return self.cursor.fetchall()

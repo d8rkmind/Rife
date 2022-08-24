@@ -10,7 +10,7 @@ import asyncio
 
 
 keys = ["Package", "Source", "Version",
-        "Depends", 'Description', "Size", "SHA256", "MD5sum", "Filename"]
+        "Depends", 'Description', "Size", "SHA256", "MD5sum","Priority", "Filename"]
 spinner = Spinner(
     'dots2', text='[bold] Updating the information to the Database', style="bold")
 panel = Panel(spinner)

@@ -9,7 +9,7 @@ from rich.progress import (BarColumn, DownloadColumn, Progress, SpinnerColumn,
                            TextColumn, TimeRemainingColumn, TransferSpeedColumn)
 from rich.style import Style
 from rich.table import Table
-
+from src.console.print import print as _print
 bar_front = Style(color="cyan")
 bar_back = Style(color="red1")
 
@@ -63,12 +63,44 @@ class Downloader:
 
 
 class DownloaderPackage:
-    def __init__(self,list:dict):
+    def __init__(self, list: dict, sum: int):
         self.list = list
         self.path = PKG_DOWNLOAD_PATH
         os.makedirs(self.path, exist_ok=True)
-        
+        self.progress = Progress(
+            SpinnerColumn(),
+            "{task.description}",
+            BarColumn(
+                bar_width=None, style=bar_back,
+                complete_style=bar_front, finished_style=bar_front
+            ),
+            TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+            "•",
+            TimeRemainingColumn(),
+            "•",
+            DownloadColumn(),
+            "•",
+            TransferSpeedColumn(),
+        )
+        self.panel = Panel(self.progress)
+        self.job = self.progress.add_task(
+            description="Downloading the packages", total=int(sum))
+        asyncio.run(self.__init__download())
 
-    def __init__download(self):
-        for i in self.list:
-            self.__download_file(i)
+    async def __init__download(self):
+        with Live(self.panel, refresh_per_second=10):
+            async with aiohttp.ClientSession() as session:
+                task = []
+                for i in self.list:
+                    task.append(asyncio.ensure_future(
+                        self.__download_file(session,i["url"],i['Package'])))
+                await asyncio.gather(*task)
+
+    async def __download_file(self, session, url,package):
+        async with session.get(url) as resp:
+            if resp.status == 200:
+                with open(os.path.join(PKG_DOWNLOAD_PATH, str(url.split('/')[-1])), "wb") as f:
+                    async for data in resp.content.iter_chunked(1024):
+                        f.write(data)
+                        self.progress.advance(self.job, advance=len(data))
+                        
