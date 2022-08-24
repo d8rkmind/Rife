@@ -29,8 +29,6 @@ def main():
         else:
             print_error(e)
             sys.exit(1)
-    finally:
-        os.system("pyclean")
 
 if __name__ == "__main__":
     main()
